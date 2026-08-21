@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TimeGovern — Classic shell (template lab)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --brand: #1d4ed8;
+      --brand2: #0891b2;
+      --header: #0b1220;
+      --ok: #059669;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    h1, h2, .brand { font-family: "Plus Jakarta Sans", Inter, sans-serif; }
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+    /* --- Header -- */
+    .topbar {
+      background: #070b14;
+      color: #cbd5e1;
+      font-size: 12px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .topbar-left, .topbar-right { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0f172a; border: 1px solid #1e293b;
+      border-radius: 8px; padding: 2px 8px; white-space: nowrap;
+    }
+    .pill.utc { color: #34d399; border-color: #065f46; }
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: 8px;
+      border: 1px solid #334155; background: #0f172a; color: #e2e8f0;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .icon-btn:hover { background: #1e293b; }
+
+    .mainhead {
+      background: var(--header);
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 12px; min-width: 200px;
+    }
+    .logo-mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: grid; place-items: center; font-size: 18px;
+    }
+    .logo-text { line-height: 1.15; }
+    .logo-text strong { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+    .logo-text strong span { color: #22d3ee; }
+    .logo-text small { color: #94a3b8; font-size: 11px; font-weight: 500; }
+
+    .search-wrap { flex: 1; min-width: 220px; max-width: 560px; position: relative; }
+    .search-wrap input {
+      width: 100%; height: 42px; border-radius: 12px;
+      border: 1px solid #334155; background: #020617; color: white;
+      padding: 0 14px 0 40px; font-size: 14px;
+    }
+    .search-wrap input::placeholder { color: #64748b; }
+    .search-wrap .search-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: #64748b; font-size: 14px; pointer-events: none;
+    }
+    .search-hint {
+      margin-top: 6px; font-size: 11px; color: #94a3b8;
+    }
+
+    .nav {
+      background: #111827;
+      border-top: 1px solid #1f2937;
+      display: flex; overflow-x: auto; gap: 0; padding: 0 8px;
+    }
+    .nav a {
+      color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 500;
+      padding: 12px 14px; white-space: nowrap; border-bottom: 2px solid transparent;
+    }
+    .nav a:hover { color: white; }
+    .nav a.active { color: #67e8f9; border-bottom-color: #22d3ee; }
+
+    /* no side ads in lab */
+    .page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px 24px; box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+    }
+    .hero-time {
+      display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center;
+      background: linear-gradient(135deg, #0f172a, #1e3a5f);
+      color: white; border-radius: 16px; padding: 28px;
+      margin-top: 16px;
+    }
+    .hero-time .city { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; }
+    .hero-time .clock { font-size: 48px; font-weight: 700; letter-spacing: -0.04em; }
+    .hero-time .meta { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .actions button {
+      border-radius: 10px; border: 1px solid #334155; background: #1e293b;
+      color: #e2e8f0; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .actions button.primary { background: #2563eb; border-color: #2563eb; color: white; }
+
+    .note {
+      margin-top: 20px; font-size: 13px; color: var(--muted);
+      border-left: 3px solid var(--brand); padding-left: 12px;
+    }
+    .lab-badge {
+      position: fixed; bottom: 12px; right: 12px;
+      background: #7c3aed; color: white; font-size: 11px; font-weight: 700;
+      padding: 6px 10px; border-radius: 999px; z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <!-- TOP: UTC + primary only; tools as icons -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="pill utc mono" id="utc">--:--:-- UTC</span>
+      <span class="pill">★ Primary: <strong style="color:#fff">Los Angeles</strong> · PDT</span>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" title="Theme">☀</button>
+      <button class="icon-btn" title="Security">🔒</button>
+      <button class="icon-btn" title="Account">👤</button>
+      <button class="icon-btn" title="More">⋯</button>
+    </div>
+  </div>
+
+  <!-- BRAND + SEARCH: no Set Primary corner button -->
+  <div class="mainhead">
+    <div class="logo">
+      <div class="logo-mark" aria-hidden="true">🌐</div>
+      <div class="logo-text brand">
+        <strong>TimeGovern<span>.com</span></strong><br />
+        <small>World clock &amp; global time</small>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="search" placeholder="Search city or timezone (London, Tokyo, EST…)" aria-label="Search city" />
+      <div class="search-hint">Pick a city in results to set it as primary — no separate corner button</div>
+    </div>
+  </div>
+
+  <!-- NAV: clean labels, no keyboard numbers -->
+  <nav class="nav">
+    <a class="active" href="#">World Clock</a>
+    <a href="#">Calendar</a>
+    <a href="#">Sun &amp; Moon</a>
+    <a href="#">Weather</a>
+    <a href="#">Timers</a>
+    <a href="#">News</a>
+    <a href="#">Calculators</a>
+    <a href="#">Company</a>
+  </nav>
+
+  <main class="page">
+    <div class="card">
+      <h1 style="margin:0 0 6px;font-size:22px;">World Clock</h1>
+      <p style="margin:0;color:var(--muted);font-size:14px;">Full-width content. No left/right ad columns in this lab shell.</p>
+
+      <div class="hero-time">
+        <div>
+          <div class="meta">Focal time zone</div>
+          <div class="city brand">Los Angeles</div>
+          <div class="clock mono" id="local">--:--:--</div>
+          <div class="meta">United States · PDT</div>
+          <div class="actions">
+            <button class="primary">Pin city</button>
+            <button>Meeting planner</button>
+            <button>Time zone map</button>
+          </div>
+        </div>
+        <div style="width:120px;height:120px;border-radius:50%;border:3px solid #334155;display:grid;place-items:center;color:#94a3b8;font-size:12px;">Analog<br/>clock</div>
+      </div>
+
+      <p class="note">
+        <strong>Lab only.</strong> Production repo is untouched. This page demonstrates the Classic layout fixes from your screenshot.
+      </p>
+    </div>
+  </main>
+
+  <div class="lab-badge">TEMPLATE LAB · Classic v1</div>
+
+  <script>
+    function tick() {
+      const n = new Date();
+      const utc = n.toISOString().slice(11, 19) + ' UTC';
+      document.getElementById('utc').textContent = utc;
+      document.getElementById('local').textContent = n.toLocaleTimeString('en-US', { hour12: true, timeZone: 'America/Los_Angeles' });
+    }
+    tick(); setInterval(tick, 1000);
+  </script>
+</body>
+</html>
