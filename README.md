@@ -1,43 +1,39 @@
 # TimeGovern Template Lab
 
-**Purpose:** Experiment with layouts, fonts, logos, and button placement **without touching** the production app.
+**Production repo is NOT modified.** This lab is for layout/font/logo experiments only.
 
 | Repo | Role |
 |------|------|
-| `timegovern-GROK-2026-08-20` | **Production** — do not break |
-| `timegovern-template-lab` | **This sandbox** — try templates safely |
+| `timegovern-GROK-2026-08-20` | Production — leave alone |
+| `timegovern-template-lab` | This sandbox |
 
-## How we work here
+## Open the Classic full layout
 
-1. Build a minimal shell (header + nav + one sample page)
-2. Try one visual style at a time
-3. You approve the look
-4. Only then we port the winning design into production
+```powershell
+cd "C:\Users\Superman\Documents\TIMEGOVERN TEMPLATE LAB\lab"
+git pull
+start classic-shell.html
+```
 
-## Problems we are solving (from your feedback)
+If you cloned into the lab subfolder earlier, use that path. Or:
 
-- "Set Primary" and similar actions pushed into awkward corners
-- Fonts feel weak / not professional
-- Header and template themes feel messy
-- Overlapping buttons and labels
+```powershell
+cd "C:\Users\Superman\Documents\TIMEGOVERN TEMPLATE LAB"
+git pull
+start classic-shell.html
+```
 
-## Design goals (timeanddate-inspired + modern)
+## What Classic full v1 includes
 
-- Clear hierarchy: logo left, search centre, actions right
-- Primary actions next to their context (not floating alone)
-- Strong readable fonts (Inter + Plus Jakarta Sans)
-- Simple top nav; no badge spam
+- Clean header (no corner “Set Primary”)
+- Search → click city = set primary
+- Working nav: World Clock, Calendar, Sun & Moon, Weather, Timers, News, Calculators, Company
+- Live clocks + analog hands for primary city
+- City grid, pin chips, stopwatch, date diff, company contact demo
+- No left/right ad columns
+- Fonts: Inter + Plus Jakarta Sans + JetBrains Mono
+- Globe SVG logo mark
 
-## Logo directions to choose
+## Next
 
-See `docs/LOGO-OPTIONS.md`
-
-## Font stack (recommended)
-
-- **UI / body:** Inter
-- **Headings / brand:** Plus Jakarta Sans
-- **Times / numbers:** JetBrains Mono (tabular)
-
-## Status
-
-Lab created 21 Aug 2026. Production repo untouched.
+Approve this layout, then we either refine Classic or add Corporate / Minimal variants in separate HTML files.

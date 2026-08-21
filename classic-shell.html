@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TimeGovern — Classic shell (template lab)</title>
+  <title>TimeGovern — Classic full layout (template lab)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f4f7fb;
+      --bg: #f1f5f9;
       --card: #ffffff;
       --ink: #0f172a;
       --muted: #64748b;
       --line: #e2e8f0;
       --brand: #1d4ed8;
-      --brand2: #0891b2;
+      --cyan: #0891b2;
       --header: #0b1220;
       --ok: #059669;
     }
@@ -26,14 +26,14 @@
       background: var(--bg);
       color: var(--ink);
       line-height: 1.5;
+      overflow-x: hidden;
     }
-    h1, h2, .brand { font-family: "Plus Jakarta Sans", Inter, sans-serif; }
+    h1, h2, h3, .brand { font-family: "Plus Jakarta Sans", Inter, sans-serif; letter-spacing: -0.02em; }
     .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
 
-    /* --- Header -- */
     .topbar {
       background: #070b14;
-      color: #cbd5e1;
+      color: #94a3b8;
       font-size: 12px;
       height: 36px;
       display: flex;
@@ -49,10 +49,12 @@
       border-radius: 8px; padding: 2px 8px; white-space: nowrap;
     }
     .pill.utc { color: #34d399; border-color: #065f46; }
+    .pill strong { color: #f8fafc; font-weight: 600; }
     .icon-btn {
       width: 30px; height: 30px; border-radius: 8px;
       border: 1px solid #334155; background: #0f172a; color: #e2e8f0;
       cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px;
     }
     .icon-btn:hover { background: #1e293b; }
 
@@ -65,158 +67,579 @@
       align-items: center;
       gap: 16px;
     }
-    .logo {
-      display: flex; align-items: center; gap: 12px; min-width: 200px;
-    }
+    .logo { display: flex; align-items: center; gap: 12px; min-width: 180px; cursor: pointer; border: 0; background: none; color: inherit; text-align: left; padding: 0; }
     .logo-mark {
       width: 40px; height: 40px; border-radius: 12px;
       background: linear-gradient(135deg, #2563eb, #06b6d4);
-      display: grid; place-items: center; font-size: 18px;
+      display: grid; place-items: center;
+      box-shadow: 0 4px 12px rgb(37 99 235 / 35%);
+      flex-shrink: 0;
     }
-    .logo-text { line-height: 1.15; }
-    .logo-text strong { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+    .logo-mark svg { width: 22px; height: 22px; }
+    .logo-text strong { font-size: 18px; font-weight: 800; display: block; line-height: 1.2; }
     .logo-text strong span { color: #22d3ee; }
     .logo-text small { color: #94a3b8; font-size: 11px; font-weight: 500; }
 
-    .search-wrap { flex: 1; min-width: 220px; max-width: 560px; position: relative; }
+    .search-wrap { flex: 1; min-width: 200px; max-width: 520px; position: relative; }
     .search-wrap input {
       width: 100%; height: 42px; border-radius: 12px;
       border: 1px solid #334155; background: #020617; color: white;
-      padding: 0 14px 0 40px; font-size: 14px;
+      padding: 0 14px 0 40px; font-size: 14px; outline: none;
     }
+    .search-wrap input:focus { border-color: #22d3ee; box-shadow: 0 0 0 3px rgb(34 211 238 / 15%); }
     .search-wrap input::placeholder { color: #64748b; }
-    .search-wrap .search-icon {
+    .search-icon {
       position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-      color: #64748b; font-size: 14px; pointer-events: none;
+      opacity: 0.6; pointer-events: none; font-size: 14px;
     }
-    .search-hint {
-      margin-top: 6px; font-size: 11px; color: #94a3b8;
+    .search-dropdown {
+      display: none; position: absolute; left: 0; right: 0; top: calc(100% + 6px);
+      background: #020617; border: 1px solid #334155; border-radius: 12px;
+      max-height: 280px; overflow-y: auto; z-index: 40;
+      box-shadow: 0 16px 40px rgb(0 0 0 / 45%);
     }
+    .search-dropdown.open { display: block; }
+    .search-dropdown button {
+      width: 100%; text-align: left; padding: 10px 14px; border: 0; border-bottom: 1px solid #1e293b;
+      background: transparent; color: #e2e8f0; cursor: pointer; font-size: 13px;
+      display: flex; justify-content: space-between; gap: 12px;
+    }
+    .search-dropdown button:hover, .search-dropdown button:focus { background: #1e293b; }
+    .search-dropdown .tz { color: #67e8f9; font-family: "JetBrains Mono", monospace; font-size: 11px; }
+
+    .pinned-row {
+      display: none; width: 100%; gap: 6px; flex-wrap: wrap; padding: 0 16px 10px;
+      background: var(--header);
+    }
+    .pinned-row.show { display: flex; }
+    .chip {
+      font-size: 11px; padding: 4px 10px; border-radius: 999px;
+      background: #1e293b; color: #cbd5e1; border: 1px solid #334155; cursor: pointer;
+    }
+    .chip.active { background: #164e63; border-color: #22d3ee; color: #a5f3fc; }
 
     .nav {
       background: #111827;
       border-top: 1px solid #1f2937;
-      display: flex; overflow-x: auto; gap: 0; padding: 0 8px;
+      display: flex; overflow-x: auto; padding: 0 8px;
+      scrollbar-width: none;
     }
-    .nav a {
-      color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 500;
-      padding: 12px 14px; white-space: nowrap; border-bottom: 2px solid transparent;
+    .nav::-webkit-scrollbar { display: none; }
+    .nav button {
+      color: #94a3b8; background: none; border: 0; border-bottom: 2px solid transparent;
+      font-size: 13px; font-weight: 500; padding: 12px 14px; white-space: nowrap; cursor: pointer;
+      font-family: inherit;
     }
-    .nav a:hover { color: white; }
-    .nav a.active { color: #67e8f9; border-bottom-color: #22d3ee; }
+    .nav button:hover { color: white; }
+    .nav button.active { color: #67e8f9; border-bottom-color: #22d3ee; }
 
-    /* no side ads in lab */
-    .page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+    .page { max-width: 1080px; margin: 0 auto; padding: 24px 16px 80px; }
+    .section { display: none; }
+    .section.active { display: block; }
+
     .card {
       background: var(--card); border: 1px solid var(--line);
-      border-radius: 16px; padding: 20px 24px; box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+      border-radius: 16px; padding: 20px 24px;
+      box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
     }
+    .card + .card { margin-top: 16px; }
+    .card h1 { margin: 0 0 6px; font-size: 22px; }
+    .card h2 { margin: 0 0 12px; font-size: 18px; }
+    .lead { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+
     .hero-time {
       display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center;
       background: linear-gradient(135deg, #0f172a, #1e3a5f);
-      color: white; border-radius: 16px; padding: 28px;
-      margin-top: 16px;
+      color: white; border-radius: 16px; padding: 28px; margin-top: 8px;
     }
-    .hero-time .city { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; }
-    .hero-time .clock { font-size: 48px; font-weight: 700; letter-spacing: -0.04em; }
-    .hero-time .meta { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+    @media (max-width: 640px) {
+      .hero-time { grid-template-columns: 1fr; }
+    }
+    .hero-time .label { color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+    .hero-time .city { font-size: 28px; font-weight: 800; margin-top: 4px; }
+    .hero-time .clock { font-size: 44px; font-weight: 700; letter-spacing: -0.04em; margin: 8px 0 4px; }
+    .hero-time .meta { color: #94a3b8; font-size: 13px; }
     .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
     .actions button {
       border-radius: 10px; border: 1px solid #334155; background: #1e293b;
       color: #e2e8f0; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: inherit;
     }
     .actions button.primary { background: #2563eb; border-color: #2563eb; color: white; }
+    .actions button:hover { filter: brightness(1.08); }
 
-    .note {
-      margin-top: 20px; font-size: 13px; color: var(--muted);
-      border-left: 3px solid var(--brand); padding-left: 12px;
+    .analog {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 3px solid #334155; position: relative; background: #0f172a;
+      flex-shrink: 0;
     }
+    .analog .hand {
+      position: absolute; left: 50%; bottom: 50%; width: 2px;
+      background: #e2e8f0; transform-origin: bottom center;
+      border-radius: 2px;
+    }
+    .analog .hour { height: 28px; width: 3px; }
+    .analog .minute { height: 38px; background: #94a3b8; }
+    .analog .second { height: 42px; background: #f43f5e; width: 1px; }
+    .analog .dot {
+      position: absolute; left: 50%; top: 50%; width: 8px; height: 8px;
+      margin: -4px 0 0 -4px; border-radius: 50%; background: #22d3ee;
+    }
+
+    .city-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 16px;
+    }
+    .city-card {
+      border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+      background: #f8fafc; cursor: pointer; transition: border-color 0.15s;
+    }
+    .city-card:hover, .city-card.active { border-color: #2563eb; background: #eff6ff; }
+    .city-card .name { font-weight: 700; font-size: 14px; }
+    .city-card .time { font-size: 22px; font-weight: 700; margin: 6px 0 2px; letter-spacing: -0.03em; }
+    .city-card .sub { font-size: 11px; color: var(--muted); }
+
+    .news-item {
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+      display: flex; gap: 12px; justify-content: space-between; align-items: flex-start;
+    }
+    .news-item:last-child { border-bottom: 0; }
+    .news-item a { color: var(--ink); font-weight: 600; font-size: 14px; text-decoration: none; }
+    .news-item a:hover { color: var(--brand); }
+    .news-item .src { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+    .form-row { display: grid; gap: 8px; margin-bottom: 12px; }
+    .form-row label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .form-row input, .form-row textarea, .form-row select {
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+      font: inherit; font-size: 14px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--brand); color: white; border: 0; border-radius: 10px;
+      padding: 10px 16px; font-weight: 600; font-size: 13px; cursor: pointer;
+      font-family: inherit;
+    }
+    .btn.secondary { background: #e2e8f0; color: var(--ink); }
+
+    footer {
+      background: #0f172a; color: #94a3b8; font-size: 12px;
+      padding: 32px 16px; margin-top: 24px;
+    }
+    footer .inner { max-width: 1080px; margin: 0 auto; display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    footer strong { color: white; display: block; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    footer a { color: #94a3b8; text-decoration: none; display: block; margin: 4px 0; cursor: pointer; }
+    footer a:hover { color: #22d3ee; }
+
     .lab-badge {
-      position: fixed; bottom: 12px; right: 12px;
+      position: fixed; bottom: 12px; right: 12px; z-index: 50;
       background: #7c3aed; color: white; font-size: 11px; font-weight: 700;
-      padding: 6px 10px; border-radius: 999px; z-index: 50;
+      padding: 6px 12px; border-radius: 999px; box-shadow: 0 4px 12px rgb(124 58 237 / 40%);
     }
+    .toast {
+      position: fixed; bottom: 48px; left: 50%; transform: translateX(-50%);
+      background: #0f172a; color: white; font-size: 13px; padding: 10px 16px;
+      border-radius: 10px; display: none; z-index: 60; max-width: 90vw;
+    }
+    .toast.show { display: block; }
   </style>
 </head>
 <body>
-  <!-- TOP: UTC + primary only; tools as icons -->
   <div class="topbar">
     <div class="topbar-left">
       <span class="pill utc mono" id="utc">--:--:-- UTC</span>
-      <span class="pill">★ Primary: <strong style="color:#fff">Los Angeles</strong> · PDT</span>
+      <span class="pill">★ Primary: <strong id="primaryName">Los Angeles</strong> · <span id="primaryAbbr" class="mono">PDT</span></span>
     </div>
     <div class="topbar-right">
-      <button class="icon-btn" title="Theme">☀</button>
-      <button class="icon-btn" title="Security">🔒</button>
-      <button class="icon-btn" title="Account">👤</button>
-      <button class="icon-btn" title="More">⋯</button>
+      <button type="button" class="icon-btn" title="Light / dark (demo)" id="themeBtn">☀</button>
+      <button type="button" class="icon-btn" title="Security">🔒</button>
+      <button type="button" class="icon-btn" title="Account">👤</button>
+      <button type="button" class="icon-btn" title="More">⋯</button>
     </div>
   </div>
 
-  <!-- BRAND + SEARCH: no Set Primary corner button -->
   <div class="mainhead">
-    <div class="logo">
-      <div class="logo-mark" aria-hidden="true">🌐</div>
-      <div class="logo-text brand">
-        <strong>TimeGovern<span>.com</span></strong><br />
+    <button type="button" class="logo brand" id="logoBtn" title="Home">
+      <div class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+      </div>
+      <div class="logo-text">
+        <strong>TimeGovern<span>.com</span></strong>
         <small>World clock &amp; global time</small>
       </div>
-    </div>
+    </button>
+
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="search" placeholder="Search city or timezone (London, Tokyo, EST…)" aria-label="Search city" />
-      <div class="search-hint">Pick a city in results to set it as primary — no separate corner button</div>
+      <input type="search" id="searchInput" placeholder="Search city or timezone…" autocomplete="off" aria-label="Search city" />
+      <div class="search-dropdown" id="searchDropdown" role="listbox"></div>
     </div>
   </div>
 
-  <!-- NAV: clean labels, no keyboard numbers -->
-  <nav class="nav">
-    <a class="active" href="#">World Clock</a>
-    <a href="#">Calendar</a>
-    <a href="#">Sun &amp; Moon</a>
-    <a href="#">Weather</a>
-    <a href="#">Timers</a>
-    <a href="#">News</a>
-    <a href="#">Calculators</a>
-    <a href="#">Company</a>
+  <div class="pinned-row show" id="pinnedRow"></div>
+
+  <nav class="nav" id="mainNav">
+    <button type="button" data-section="world" class="active">World Clock</button>
+    <button type="button" data-section="calendar">Calendar</button>
+    <button type="button" data-section="astronomy">Sun &amp; Moon</button>
+    <button type="button" data-section="weather">Weather</button>
+    <button type="button" data-section="timers">Timers</button>
+    <button type="button" data-section="news">News</button>
+    <button type="button" data-section="calculators">Calculators</button>
+    <button type="button" data-section="company">Company</button>
   </nav>
 
   <main class="page">
-    <div class="card">
-      <h1 style="margin:0 0 6px;font-size:22px;">World Clock</h1>
-      <p style="margin:0;color:var(--muted);font-size:14px;">Full-width content. No left/right ad columns in this lab shell.</p>
-
-      <div class="hero-time">
-        <div>
-          <div class="meta">Focal time zone</div>
-          <div class="city brand">Los Angeles</div>
-          <div class="clock mono" id="local">--:--:--</div>
-          <div class="meta">United States · PDT</div>
-          <div class="actions">
-            <button class="primary">Pin city</button>
-            <button>Meeting planner</button>
-            <button>Time zone map</button>
+    <!-- WORLD CLOCK -->
+    <section class="section active" id="sec-world">
+      <div class="card">
+        <h1>World Clock</h1>
+        <p class="lead">Full-width layout. Search a city above — selecting it sets primary. No corner “Set Primary” button.</p>
+        <div class="hero-time">
+          <div>
+            <div class="label">Focal time zone</div>
+            <div class="city brand" id="heroCity">Los Angeles</div>
+            <div class="clock mono" id="heroClock">--:--:--</div>
+            <div class="meta" id="heroMeta">United States · America/Los_Angeles</div>
+            <div class="actions">
+              <button type="button" class="primary" id="pinBtn">Pin city</button>
+              <button type="button" data-section="calendar">Open calendar</button>
+              <button type="button" data-section="company">Contact</button>
+            </div>
+          </div>
+          <div class="analog" id="analog" aria-hidden="true">
+            <div class="hand hour" id="handH"></div>
+            <div class="hand minute" id="handM"></div>
+            <div class="hand second" id="handS"></div>
+            <div class="dot"></div>
           </div>
         </div>
-        <div style="width:120px;height:120px;border-radius:50%;border:3px solid #334155;display:grid;place-items:center;color:#94a3b8;font-size:12px;">Analog<br/>clock</div>
+        <div class="city-grid" id="cityGrid"></div>
       </div>
+    </section>
 
-      <p class="note">
-        <strong>Lab only.</strong> Production repo is untouched. This page demonstrates the Classic layout fixes from your screenshot.
-      </p>
-    </div>
+    <!-- CALENDAR -->
+    <section class="section" id="sec-calendar">
+      <div class="card">
+        <h1>Calendar</h1>
+        <p class="lead">Lab placeholder — month grid will connect to production calendar later.</p>
+        <p id="calToday" class="mono" style="font-size:18px;font-weight:700;"></p>
+        <p class="lead" style="margin-top:8px;">Week number and holidays ship when we promote this shell to production.</p>
+      </div>
+    </section>
+
+    <!-- ASTRONOMY -->
+    <section class="section" id="sec-astronomy">
+      <div class="card">
+        <h1>Sun &amp; Moon</h1>
+        <p class="lead">Sunrise, sunset and moon phase for the primary city (demo times).</p>
+        <div class="city-grid">
+          <div class="city-card"><div class="name">Sunrise</div><div class="time mono" style="font-size:18px;">06:42</div><div class="sub">Demo</div></div>
+          <div class="city-card"><div class="name">Sunset</div><div class="time mono" style="font-size:18px;">19:28</div><div class="sub">Demo</div></div>
+          <div class="city-card"><div class="name">Moon</div><div class="time mono" style="font-size:18px;">Waxing</div><div class="sub">Demo phase</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WEATHER -->
+    <section class="section" id="sec-weather">
+      <div class="card">
+        <h1>Weather</h1>
+        <p class="lead">Open-Meteo will power this in production. Lab shows static demo.</p>
+        <p style="font-size:32px;font-weight:800;margin:0;">22°C</p>
+        <p class="lead">Partly cloudy · Demo for primary city</p>
+      </div>
+    </section>
+
+    <!-- TIMERS -->
+    <section class="section" id="sec-timers">
+      <div class="card">
+        <h1>Timers</h1>
+        <p class="lead">Stopwatch demo (lab).</p>
+        <p class="mono" id="stopwatch" style="font-size:36px;font-weight:700;">00:00.0</p>
+        <div class="actions">
+          <button type="button" class="primary" id="swStart">Start</button>
+          <button type="button" id="swReset">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWS -->
+    <section class="section" id="sec-news">
+      <div class="card">
+        <h1>News</h1>
+        <p class="lead">Free multi-source headlines (demo list in lab).</p>
+        <div id="newsList"></div>
+      </div>
+    </section>
+
+    <!-- CALCULATORS -->
+    <section class="section" id="sec-calculators">
+      <div class="card">
+        <h1>Date difference</h1>
+        <p class="lead">Simple lab calculator.</p>
+        <div class="form-row"><label>Start date</label><input type="date" id="d1" /></div>
+        <div class="form-row"><label>End date</label><input type="date" id="d2" /></div>
+        <button type="button" class="btn" id="diffBtn">Calculate</button>
+        <p id="diffOut" class="lead" style="margin-top:12px;"></p>
+      </div>
+    </section>
+
+    <!-- COMPANY -->
+    <section class="section" id="sec-company">
+      <div class="card">
+        <h1>Company · Melbourne</h1>
+        <p class="lead">Level 12, 120 Collins Street, Melbourne VIC 3000, Australia</p>
+        <p class="lead">contact@timegovern.com · +61 (03) 9650 4200</p>
+        <div class="form-row"><label>Name</label><input type="text" placeholder="Your name" /></div>
+        <div class="form-row"><label>Email</label><input type="email" placeholder="you@example.com" /></div>
+        <div class="form-row"><label>Message</label><textarea rows="3" placeholder="How can we help?"></textarea></div>
+        <button type="button" class="btn" id="contactBtn">Send (lab demo)</button>
+      </div>
+      <div class="card">
+        <h2>Legal &amp; Trust</h2>
+        <p class="lead">Privacy, Terms and Advertising policies live in production Company hub. Lab links are placeholders.</p>
+        <div class="actions">
+          <button type="button" class="secondary btn">Privacy Policy</button>
+          <button type="button" class="secondary btn">Terms of Use</button>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <div class="lab-badge">TEMPLATE LAB · Classic v1</div>
+  <footer>
+    <div class="inner">
+      <div>
+        <strong>TimeGovern</strong>
+        <span>Melbourne, Australia · Template lab shell</span>
+      </div>
+      <div>
+        <strong>Sections</strong>
+        <a data-section="world">World Clock</a>
+        <a data-section="news">News</a>
+        <a data-section="company">Company</a>
+      </div>
+      <div>
+        <strong>Note</strong>
+        <span>Production repo is separate and untouched.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="lab-badge">TEMPLATE LAB · Classic full v1</div>
+  <div class="toast" id="toast"></div>
 
   <script>
-    function tick() {
-      const n = new Date();
-      const utc = n.toISOString().slice(11, 19) + ' UTC';
-      document.getElementById('utc').textContent = utc;
-      document.getElementById('local').textContent = n.toLocaleTimeString('en-US', { hour12: true, timeZone: 'America/Los_Angeles' });
+    const CITIES = [
+      { name: 'Los Angeles', country: 'United States', tz: 'America/Los_Angeles', abbr: 'PDT' },
+      { name: 'New York', country: 'United States', tz: 'America/New_York', abbr: 'EDT' },
+      { name: 'London', country: 'United Kingdom', tz: 'Europe/London', abbr: 'BST' },
+      { name: 'Paris', country: 'France', tz: 'Europe/Paris', abbr: 'CEST' },
+      { name: 'Tokyo', country: 'Japan', tz: 'Asia/Tokyo', abbr: 'JST' },
+      { name: 'Sydney', country: 'Australia', tz: 'Australia/Sydney', abbr: 'AEST' },
+      { name: 'Dubai', country: 'UAE', tz: 'Asia/Dubai', abbr: 'GST' },
+      { name: 'Singapore', country: 'Singapore', tz: 'Asia/Singapore', abbr: 'SGT' },
+      { name: 'Melbourne', country: 'Australia', tz: 'Australia/Melbourne', abbr: 'AEST' },
+    ];
+
+    let primary = CITIES[0];
+    let pinned = [CITIES[1], CITIES[2], CITIES[4], CITIES[5]];
+    let swRunning = false, swStart = 0, swAcc = 0, swTimer = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function toast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
     }
-    tick(); setInterval(tick, 1000);
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach((s) => s.classList.remove('active'));
+      document.querySelectorAll('#mainNav button').forEach((b) => {
+        b.classList.toggle('active', b.dataset.section === id);
+      });
+      const el = document.getElementById('sec-' + id);
+      if (el) el.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-section]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = el.getAttribute('data-section');
+        if (id) showSection(id);
+      });
+    });
+
+    $('logoBtn').addEventListener('click', () => showSection('world'));
+
+    function formatInTz(date, tz, opts) {
+      return new Intl.DateTimeFormat('en-US', { timeZone: tz, ...opts }).format(date);
+    }
+
+    function setPrimary(city) {
+      primary = city;
+      $('primaryName').textContent = city.name;
+      $('primaryAbbr').textContent = city.abbr;
+      $('heroCity').textContent = city.name;
+      $('heroMeta').textContent = city.country + ' · ' + city.tz;
+      renderPinned();
+      renderGrid();
+      toast('Primary set to ' + city.name);
+      showSection('world');
+    }
+
+    function renderPinned() {
+      const row = $('pinnedRow');
+      row.innerHTML = pinned.map((c) => {
+        const active = c.name === primary.name ? ' active' : '';
+        return `<button type="button" class="chip${active}" data-city="${c.name}">${c.name} <span class="mono">${c.abbr}</span></button>`;
+      }).join('');
+      row.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const city = CITIES.find((c) => c.name === btn.dataset.city);
+          if (city) setPrimary(city);
+        });
+      });
+    }
+
+    function renderGrid() {
+      const now = new Date();
+      $('cityGrid').innerHTML = CITIES.map((c) => {
+        const time = formatInTz(now, c.tz, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        const active = c.name === primary.name ? ' active' : '';
+        return `<div class="city-card${active}" data-city="${c.name}">
+          <div class="name">${c.name}</div>
+          <div class="time mono">${time}</div>
+          <div class="sub">${c.abbr} · ${c.country}</div>
+        </div>`;
+      }).join('');
+      $('cityGrid').querySelectorAll('.city-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const city = CITIES.find((c) => c.name === card.dataset.city);
+          if (city) setPrimary(city);
+        });
+      });
+    }
+
+    function tick() {
+      const now = new Date();
+      $('utc').textContent = now.toISOString().slice(11, 19) + ' UTC';
+      $('heroClock').textContent = formatInTz(now, primary.tz, {
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
+      });
+      // analog from primary local
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: primary.tz, hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false,
+      }).formatToParts(now);
+      const get = (t) => parseInt(parts.find((p) => p.type === t).value, 10);
+      let h = get('hour') % 12, m = get('minute'), s = get('second');
+      $('handH').style.transform = `translateX(-50%) rotate(${h * 30 + m * 0.5}deg)`;
+      $('handM').style.transform = `translateX(-50%) rotate(${m * 6}deg)`;
+      $('handS').style.transform = `translateX(-50%) rotate(${s * 6}deg)`;
+      renderGrid();
+      $('calToday').textContent = now.toDateString();
+    }
+
+    // Search: selecting a result sets primary (no corner button)
+    const input = $('searchInput');
+    const dropdown = $('searchDropdown');
+
+    function filterCities(q) {
+      q = q.trim().toLowerCase();
+      if (!q) return CITIES.slice(0, 6);
+      return CITIES.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.country.toLowerCase().includes(q) ||
+          c.tz.toLowerCase().includes(q) ||
+          c.abbr.toLowerCase().includes(q)
+      );
+    }
+
+    function openDropdown() {
+      const list = filterCities(input.value);
+      dropdown.innerHTML = list.length
+        ? list.map((c) => `<button type="button" role="option" data-city="${c.name}"><span>${c.name}, ${c.country}</span><span class="tz">${c.abbr}</span></button>`).join('')
+        : '<button type="button" disabled>No matches</button>';
+      dropdown.classList.add('open');
+      dropdown.querySelectorAll('button[data-city]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const city = CITIES.find((c) => c.name === btn.dataset.city);
+          if (city) setPrimary(city);
+          input.value = '';
+          dropdown.classList.remove('open');
+        });
+      });
+    }
+
+    input.addEventListener('focus', openDropdown);
+    input.addEventListener('input', openDropdown);
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-wrap')) dropdown.classList.remove('open');
+    });
+
+    $('pinBtn').addEventListener('click', () => {
+      if (!pinned.find((c) => c.name === primary.name)) {
+        pinned = [primary, ...pinned].slice(0, 6);
+        renderPinned();
+        toast('Pinned ' + primary.name);
+      } else toast('Already pinned');
+    });
+
+    // Stopwatch
+    function renderSW() {
+      const t = swAcc + (swRunning ? Date.now() - swStart : 0);
+      const ms = Math.floor((t % 1000) / 100);
+      const s = Math.floor(t / 1000) % 60;
+      const m = Math.floor(t / 60000);
+      $('stopwatch').textContent =
+        String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0') + '.' + ms;
+    }
+    $('swStart').addEventListener('click', () => {
+      if (swRunning) {
+        swAcc += Date.now() - swStart;
+        swRunning = false;
+        clearInterval(swTimer);
+        $('swStart').textContent = 'Start';
+      } else {
+        swStart = Date.now();
+        swRunning = true;
+        swTimer = setInterval(renderSW, 100);
+        $('swStart').textContent = 'Pause';
+      }
+    });
+    $('swReset').addEventListener('click', () => {
+      swRunning = false; swAcc = 0; clearInterval(swTimer);
+      $('swStart').textContent = 'Start'; renderSW();
+    });
+
+    // News demo
+    $('newsList').innerHTML = [
+      ['Global shipping lines adjust schedules for port congestion', 'Reuters'],
+      ['Daylight saving debates continue in several US states', 'AP'],
+      ['Solar activity outlook for the coming week', 'NASA'],
+      ['Remote teams standardise on shared meeting windows', 'BBC'],
+    ].map(([t, s]) => `<div class="news-item"><a href="#">${t}</a><span class="src">${s}</span></div>`).join('');
+
+    // Date diff
+    const today = new Date().toISOString().slice(0, 10);
+    $('d1').value = today;
+    $('d2').value = today;
+    $('diffBtn').addEventListener('click', () => {
+      const a = new Date($('d1').value);
+      const b = new Date($('d2').value);
+      if (isNaN(a) || isNaN(b)) return;
+      const days = Math.round((b - a) / 86400000);
+      $('diffOut').textContent = days + ' day(s) between dates';
+    });
+
+    $('contactBtn').addEventListener('click', () => toast('Lab only — not sent. Production uses the real contact API.'));
+
+    renderPinned();
+    tick();
+    setInterval(tick, 1000);
   </script>
 </body>
 </html>
