@@ -1,39 +1,42 @@
 # TimeGovern Template Lab
 
-**Production repo is NOT modified.** This lab is for layout/font/logo experiments only.
+Full **Classic** website for local testing. Does **not** change production (`timegovern-GROK-2026-08-20`).
 
-| Repo | Role |
-|------|------|
-| `timegovern-GROK-2026-08-20` | Production — leave alone |
-| `timegovern-template-lab` | This sandbox |
-
-## Open the Classic full layout
+## Run on localhost
 
 ```powershell
 cd "C:\Users\Superman\Documents\TIMEGOVERN TEMPLATE LAB\lab"
 git pull
-start classic-shell.html
+npm install
+npm run dev
 ```
 
-If you cloned into the lab subfolder earlier, use that path. Or:
+If your clone is in the folder root instead of `lab`:
 
 ```powershell
 cd "C:\Users\Superman\Documents\TIMEGOVERN TEMPLATE LAB"
 git pull
-start classic-shell.html
+npm install
+npm run dev
 ```
 
-## What Classic full v1 includes
+Open **http://localhost:5173**
 
-- Clean header (no corner “Set Primary”)
-- Search → click city = set primary
-- Working nav: World Clock, Calendar, Sun & Moon, Weather, Timers, News, Calculators, Company
-- Live clocks + analog hands for primary city
-- City grid, pin chips, stopwatch, date diff, company contact demo
-- No left/right ad columns
-- Fonts: Inter + Plus Jakarta Sans + JetBrains Mono
-- Globe SVG logo mark
+## Working sections (all nav links)
 
-## Next
+| Nav | What works |
+|-----|------------|
+| World Clock | Live times, analog clock, city grid, set primary via search/click |
+| Calendar | Month grid |
+| Sun & Moon | Demo sun/moon cards |
+| Weather | Demo weather |
+| Timers | Working stopwatch |
+| News | Headline list |
+| Calculators | Date difference |
+| Company | Melbourne contact form + links |
 
-Approve this layout, then we either refine Classic or add Corporate / Minimal variants in separate HTML files.
+Also: header search, pinned chips, dark mode toggle, footer links.
+
+## Optional static preview
+
+`classic-shell.html` is still available for a no-build preview.
